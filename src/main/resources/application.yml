@@ -1,4 +1,5 @@
 graphql:
   servlet:
-    corsEnabled: false
     enabled: true
+    mapping: /graphql
+    corsEnabled: false
