@@ -1,8 +1,12 @@
-FROM openjdk:8-jdk-alpine
-ARG JAVA_FILE
+FROM openjdk:16-jdk-alpine
+RUN addgroup -S spring && adduser -S spring -G spring
 EXPOSE 8080
-COPY ${JAVA_FILE} app.jar
 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom",\
-    "-Dspring.profiles.active=dev-server",\    
-    "-jar","/app.jar"]
+ENV JAVA_PROFILE prod
+ARG DEPENDENCY=target/dependency
+COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
+COPY ${DEPENDENCY}/META-INF /app/META-INF
+COPY ${DEPENDENCY}/BOOT-INF/classes /app
+
+ENTRYPOINT ["java" ,   "-Dspring.profiles.active=${JAVA_PROFILE}",\
+           "-cp","app:app/lib/*","se331.lab.rest.Lab07Application"]
