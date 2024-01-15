@@ -14,7 +14,7 @@ jobs:
         name: setup java
         uses: actions/setup-java@v3
         with:
-          java-version: '16'
+          java-version: '17'
           distribution: 'adopt'
       -
         name: run maven
@@ -46,11 +46,28 @@ jobs:
           push: true
           tags: dto80/234-deploylab-backend:latest
       -
-        name: prepare the docker-compose run
-        run: |
-              mkdir 234-deploylab-backend
-              cp docker-compose.yml 234-deploylab-backend/docker-compose.yml
-              cd 234-deploylab-backend
-              docker-compose -H ${{ secrets.HOST_SERVER }} down --remove-orphans
-              docker-compose -H ${{ secrets.HOST_SERVER }} pull
-              docker-compose -H ${{ secrets.HOST_SERVER }} up -d
+        name: copy file via ssh password
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{secrets.HOST_SERVER}}
+          username: ${{ secrets.HOST_USER_NAME }}
+          key: ${{ secrets.HOST_SSH_PRIVATE_KEY }}
+          port: 22
+          source: "docker-compose.yml"
+          target: "/home/ubuntu/backend"
+      -
+        name:   docker compose
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{secrets.HOST_SERVER}}
+          username: ${{ secrets.HOST_USER_NAME }}
+          key: ${{ secrets.HOST_SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /home/ubuntu/backend
+            echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+            mv docker-compose-prod.yml docker-compose.yml
+            docker compose down
+            docker compose pull
+            docker compose up -d
+            rm -rf /home/ubuntu/backend
