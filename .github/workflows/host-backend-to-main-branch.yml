@@ -18,8 +18,8 @@ jobs:
           distribution: 'adopt'
       -
         name: run maven
-        run: 
-            mvn  clean install  -DskipTests -B &&
+        run: |
+            mvn  clean install  -DskipTests -B 
             mkdir -p target/dependency && (cd target/dependency; unzip ../*.jar)
 
       -
