@@ -18,7 +18,7 @@ jobs:
           distribution: 'adopt'
       -
         name: run maven
-        run: |
+        run: 
             mvn  clean install  -DskipTests -B
             mkdir -p target/dependency && (cd target/dependency; unzip ../*.jar)
 
@@ -64,7 +64,7 @@ jobs:
           key: ${{ secrets.HOST_SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd /home/ubuntu/backend
+            cd /home/ubuntu/backend-prod
             echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
             mv docker-compose-prod.yml docker-compose.yml
             docker compose down
