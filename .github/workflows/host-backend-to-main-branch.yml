@@ -64,9 +64,9 @@ jobs:
           key: ${{ secrets.HOST_SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd /home/ubuntu/backend-prod
+            cd /home/ubuntu/backend
             echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
-            mv docker-compose-prod.yml docker-compose.yml
+            mv docker-compose.yml docker-compose.yml
             docker compose down
             docker compose pull
             docker compose up -d
